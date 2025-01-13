@@ -88,7 +88,8 @@ public class Main {
                         case 1:
                             // aggiungi nuovo frutto
                             System.out.print("Inseirisci nome del frutto:");
-                            nome = scn.next();
+                            scn.nextLine();
+                            nome = scn.nextLine();
 
                             do {
                                 try {
