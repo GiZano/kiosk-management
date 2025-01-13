@@ -4,8 +4,6 @@ import com.zanotti.chioscoDegliSmoothie.exception.*;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.ArrayList;
-import java.lang.Object;
 
 public class Main {
 
@@ -25,38 +23,18 @@ public class Main {
         return input;
     }
 
-    static synchronized void autoRifornimento(Chiosco chiosco, String frutto, int quantita){
-        System.out.print("\nRifornimento in corso");
-        try {
-            // thread sleep per far aspettare l'utente per l'avvenimento del rifornimento, simulando l'attesa per l'arrivo della merce nella vita reale
-            Thread.sleep(1000);
-            System.out.print(".");
-            Thread.sleep(1000);
-            System.out.print(".");
-            Thread.sleep(1000);
-            System.out.println(".");
-        }catch(InterruptedException e){
-            System.out.println("Interrupted!");
-        }
-        chiosco.getMagazzino().get(chiosco.trovaFrutto(frutto)).aggiungiScorte(quantita);
-        System.out.println("Scorte aggiunte con successo! (" + quantita + ")");
-
-    }
-
-
     public static void main(String[] args) {
         Scanner scn = new Scanner(System.in);
         String nome;
         int quantita, maturazione, temperatura;
         double prezzo;
         HashMap<String, Integer> ricetta = new HashMap<String, Integer>();
-        ArrayList<String> logErrori = new ArrayList<>();
         Chiosco chiosco = new Chiosco();
+        PreparazioneSmoothie prepara = new PreparazioneSmoothie();
 
         System.out.println("Benvenuto al programma di gestione del chiosco!");
         System.out.println("Potrai eseguire le azioni tramite il menu delle azioni.");
         while(true) {
-
             System.out.println("""
                     
                     MENU'
@@ -241,14 +219,14 @@ public class Main {
                             temperatura = scelta(scn, Integer.MAX_VALUE);
 
                             try {
-                                chiosco.prepara(chiosco.getMenu().get(scelta - 1), temperatura);
+                                prepara.prepara(chiosco, chiosco.getMenu().get(scelta - 1), temperatura);
                             }catch(FruttoTroppoMaturoException | FruttoAcerboException | TemperaturaErrataException | FrullatoreRottoException e){
                                 System.out.println(e.getMessage());
-                                logErrori.add(e.getMessage());
+                                prepara.getLogErrori().add(e.getMessage());
                             }catch(QuantitaInsufficienteException e){
                                 System.out.println(e.getMessage());
-                                logErrori.add(e.getMessage());
-                                autoRifornimento(chiosco, e.getFrutto(), e.getQuantitaMancante());
+                                prepara.getLogErrori().add(e.getMessage());
+                                chiosco.autoRifornimento(e.getFrutto(), e.getQuantitaMancante());
 
                             }
 
@@ -262,8 +240,8 @@ public class Main {
                     }
                     break;
                 case 3:
-                    for(int i = 0; i < logErrori.size(); i++){
-                        System.out.println((i+1) + ". : " + logErrori.get(i));
+                    for(int i = 0; i < prepara.getLogErrori().size(); i++){
+                        System.out.println((i+1) + ". : " + prepara.getLogErrori().get(i));
                     }
                     break;
                 case 0:

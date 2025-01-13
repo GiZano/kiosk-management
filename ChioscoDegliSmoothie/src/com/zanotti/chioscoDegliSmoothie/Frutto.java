@@ -43,8 +43,7 @@ public class Frutto implements Comparable<Frutto> {
     // implementazione del metodo "compareTo" dell'interfaccia "Comparable" che permette di comparare oggetti tramite un attributo a scelta
     @Override
     public int compareTo(Frutto o) {
-        Frutto f = (Frutto) o;
-        return this.nome.compareTo(f.nome);
+        return this.nome.compareTo(o.nome);
     }
 
 

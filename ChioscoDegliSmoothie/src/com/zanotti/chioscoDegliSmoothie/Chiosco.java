@@ -1,11 +1,7 @@
 package com.zanotti.chioscoDegliSmoothie;
 
-import com.zanotti.chioscoDegliSmoothie.exception.*;
-import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
 
 public class Chiosco {
 
@@ -43,7 +39,7 @@ public class Chiosco {
         else {
             System.out.println("Magazzino:");
             for (int i = 0; i < this.magazzino.size(); i++) {
-                System.out.println((i+1) + ". : " + this.magazzino.get(i).getNome() + "\nquantita: " + this.magazzino.get(i).getQuantitaDisponibile() + ", maturazione: " + this.magazzino.get(i).getMaturazione() + ", prezzo(al grammo): " + this.magazzino.get(i).getPrezzo());
+                System.out.println((i+1) + ". : " + this.magazzino.get(i).getNome() + "\nquantita: " + this.magazzino.get(i).getQuantitaDisponibile() + "g, maturazione: " + this.magazzino.get(i).getMaturazione() + ", prezzo(al grammo): " + this.magazzino.get(i).getPrezzo());
             }
         }
     }
@@ -80,7 +76,7 @@ public class Chiosco {
         boolean found = false;
         while(!found && inizio <= fine){
             pointer = (inizio+fine)/2;
-            if(Objects.equals(nomeFrutto.toLowerCase(), this.magazzino.get(pointer).getNome().toLowerCase())){
+            if(nomeFrutto.equalsIgnoreCase(this.magazzino.get(pointer).getNome())){
                 found = true;
             }
             else if(nomeFrutto.compareTo(this.magazzino.get(pointer).getNome()) < 0){
@@ -96,47 +92,23 @@ public class Chiosco {
         return pointer;
     }
 
-    public void prepara(Smoothie smoothie, int temperatura) throws FruttoTroppoMaturoException, FruttoAcerboException, QuantitaInsufficienteException, TemperaturaErrataException, FrullatoreRottoException{
-        int quantitaMancante;
-        double costo = 0;
-
-        if(temperatura > ( smoothie.getTemperaturaIdeale() + 2 ) ){
-            throw new TemperaturaErrataException("Errore: temperatura ideale superata di " + (temperatura - smoothie.getTemperaturaIdeale()) + "!");
+    public void autoRifornimento(String frutto, int quantita){
+        System.out.print("\nRifornimento in corso");
+        try {
+            // thread sleep per far aspettare l'utente per l'avvenimento del rifornimento, simulando l'attesa per l'arrivo della merce nella vita reale
+            Thread.sleep(2000);
+            System.out.print(".");
+            Thread.sleep(1000);
+            System.out.print(".");
+            Thread.sleep(500);
+            System.out.println(".");
+        }catch(InterruptedException e){
+            System.out.println("Interrupted!");
         }
-        else if(temperatura < ( smoothie.getTemperaturaIdeale() - 2 ) ){
-            throw new TemperaturaErrataException("Errore: temperatura inferiore di " + (smoothie.getTemperaturaIdeale() - temperatura) + " rispetto a quella ideale!");
-        }
+        this.getMagazzino().get(this.trovaFrutto(frutto)).aggiungiScorte(quantita);
+        System.out.println("Scorte aggiunte con successo! (" + quantita + ")");
 
-        Random rand = new Random();
-        if(rand.nextDouble() < 0.1){
-            throw new FrullatoreRottoException("Errore: frullatore rotto!");
-        }
-
-        for(Map.Entry<String, Integer> entry : smoothie.getRicetta().entrySet()  ){
-
-            if(this.magazzino.get(trovaFrutto(entry.getKey())).getMaturazione() > 8){
-                throw new FruttoTroppoMaturoException("Errore: " + entry.getKey() + " troppo maturo!");
-            }
-            else if(this.magazzino.get(trovaFrutto(entry.getKey())).getMaturazione() < 2 ){
-                throw new FruttoAcerboException("Errore: " + entry.getKey() + " acerbo!");
-            }
-            if(entry.getValue() > magazzino.get(trovaFrutto(entry.getKey())).getQuantitaDisponibile() ){
-
-                quantitaMancante = (entry.getValue() - magazzino.get(trovaFrutto(entry.getKey())).getQuantitaDisponibile());
-                throw new QuantitaInsufficienteException("Errore: quantita' di " + entry.getKey() + " insufficiente di " + quantitaMancante + "!", quantitaMancante, entry.getKey());
-
-            }
-        }
-
-        // consumazione frutti dal magazzino
-
-        for(Map.Entry<String, Integer> entry : smoothie.getRicetta().entrySet()  ){
-            magazzino.get(trovaFrutto(entry.getKey())).consuma(entry.getValue());
-            costo += magazzino.get(trovaFrutto(entry.getKey())).getPrezzo() * (double)entry.getValue();
-        }
-
-        // messaggio di riuscita preparazione
-        System.out.println("Smoothie " + smoothie.getNome() + " preparato con successo!\nPrezzo: " + costo);
     }
+
 
 }

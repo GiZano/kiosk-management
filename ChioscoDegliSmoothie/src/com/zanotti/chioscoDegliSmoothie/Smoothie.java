@@ -6,7 +6,7 @@ public class Smoothie {
 
     // definizione degli attributi della classe
     private String nome;
-    private HashMap<String, Integer> ricetta = new HashMap<String, Integer>();
+    private HashMap<String, Integer> ricetta;
     private int temperaturaIdeale;
 
     // definizione dei metodi per la gestione della classe
